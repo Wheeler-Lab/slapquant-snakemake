@@ -1,0 +1,5 @@
+name: ea-utils
+channels:
+  - bioconda
+dependencies:
+  - ea-utils

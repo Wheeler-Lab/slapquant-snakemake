@@ -1,0 +1,7 @@
+name: readbam
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - libdeflate>=1.10
+  - pysam>=0.19.0

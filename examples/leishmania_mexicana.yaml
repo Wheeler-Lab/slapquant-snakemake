@@ -1,0 +1,23 @@
+experiment_id: "leishmania_mexicana"
+splice_leader_sequence: "TGTACTTTATTG"
+minimum_fragment_length: 21
+minimum_polyA_length: 5
+
+rnaseq-runs:
+  - ERR789803
+  - ERR789788
+  - ERR789798
+  - ERR789795
+  - ERR789792
+  - ERR789800
+  - ERR789801
+  - ERR789799
+  - ERR789790
+  - ERR789786
+  - ERR789794
+  - ERR789796
+  - ERR789787
+  - ERR789797
+  - ERR789791
+
+genome-accession: tritrypdb-LmexicanaMHOMGT2001U1103-59

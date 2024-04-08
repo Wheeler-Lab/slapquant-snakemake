@@ -1,0 +1,15 @@
+experiment_id: "EXPERIMENT_NAME"        # put a descriptive name here, no spaces though, this is used as the name of the output directory.
+splice_leader_sequence: "TGTACTTTATTG"  # The splice leader sequence for the organism in question.
+minimum_fragment_length: 21             # The minimum length of the fragment beyond the splice leader sequence.
+minimum_polyA_length: 5                 # The minimum length of the polyadenylation site.
+
+# A list of RNA sequencing samples. Each entry can be in one of formats described below. You can specify as many entries and combinations of formats as you like.
+rnaseq-runs:
+  - SRR01234567   # An SRA (sequence read archive) accession number
+  - ERR012345     # An ENA (European nucleotide archive) accession number
+# A pair of fastq files (forward and reverse reads) in the resources/reads subdirectory.
+# In this case, the code will look for the files resources/reads/SAMPLE_FASTQ_FILE_1.fastq and resources/reads/SAMPLE_FASTQ_FILE_2.fastq.
+  - SAMPLE_FASTQ_FILE   
+
+# The genome 
+genome-accession: tritrypdb-LmexicanaMHOMGT2001U1103-59
