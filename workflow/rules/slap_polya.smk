@@ -55,6 +55,7 @@ rule find_splice_polyA_reads:
     output:
         "splice_reads/{sample_id}.fastq",
         "polyA_reads/{sample_id}.fastq",
+        "other_reads/{sample_id}.fastq",
     params:
         minimum_fragment_length = config['minimum_fragment_length'],
         splice_leader_sequence = config['splice_leader_sequence']
@@ -62,19 +63,29 @@ rule find_splice_polyA_reads:
     run:
         import itertools
         counter = itertools.count(1)
-        with open(output[0], 'wt') as splice_outfile, open(output[1], 'wt') as polyA_outfile, open(input[0], 'rt') as infile:
+        with (
+            open(output[0], 'wt') as splice_outfile,
+            open(output[1], 'wt') as polyA_outfile,
+            open(output[1], 'wt') as other_outfile,
+            open(input[0], 'rt') as infile,
+        ):
             for _, seq, _, quality in chunk_4(infile):
                 c = next(counter)
+                has_site = False
                 try:
                     fragment, fragment_quality = splice_check(seq, quality, params["minimum_fragment_length"], params["splice_leader_sequence"])
                     splice_outfile.write(f'@read_{c}/1\n{fragment}\n+\n{fragment_quality}\n')
+                    has_site = True
                 except ValueError:
                     pass
                 try:
                     fragment, fragment_quality, nr_A = polyA_check(seq, quality, params["minimum_fragment_length"])
                     polyA_outfile.write(f'@read_{c}_{nr_A}/1\n{fragment}\n+\n{fragment_quality}\n')
+                    has_site = True
                 except ValueError:
                     pass
+                if not has_site:
+                    other_outfile.write(f'@read_{c}_{nr_A}/1\n{fragment}\n+\n{fragment_quality}\n')
 
 # Read the mapped bam file and extract splice sites
 rule read_splice_bam:
@@ -104,18 +115,18 @@ rule read_polyA_bam:
 
 # Combine the splice sites in each sample into one csv file
 rule combine_sites:
-    input:
-        expand('{{type}}_sites/{sample}.txt', sample=config["rnaseq-runs"])
+    #input:
+    #    expand('{{type}}_sites/{sample}.txt', sample=config["rnaseq-runs"])
     output:
-        "{type}_sites.csv"
+        "{type,(splice|polyA)}_sites.csv"
     threads: 1
     conda: "../envs/pandas.yaml"
     script: "../scripts/combine_sites.py"
 
 rule filter_sites:
     input:
-        "{type}_sites.csv"
+        "{type,(splice|polyA)]}_sites.csv"
     output:
-        "filtered_{type}_sites.csv"
+        "filtered_{type,(splice|polyA)}_sites.csv"
     conda: "../envs/pandas.yaml"
     script: "../scripts/filter_sites.py"
