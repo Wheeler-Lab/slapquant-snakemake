@@ -34,11 +34,18 @@ rule download_ncbi_genome:
         "curl -OJX GET \"https://api.ncbi.nlm.nih.gov/datasets/v1/genome/accession/{wildcards.accession}/download?include_annotation_type=GENOME_FASTA&filename=genome.zip\" -H \"Accept: application/zip\";"
         "unzip -j -p genome.zip '**/*.fna' > {output[0]}"
 
-rule download_genome:
-    input:
-        f"fasta/{config['genome-accession']}.fasta"
+rule download_tritrypdb_gff:
     output:
-        "fasta/genome.fasta"
+        r"fasta/tritrypdb-{organism,[^\-]+}-{version,[0-9\.]+}.gff",
+    threads: 1
+    shell:
+        "curl -o {output[0]} \"https://tritrypdb.org/common/downloads/release-{wildcards.version}/{wildcards.organism}/gff/data/TriTrypDB-{wildcards.version}_{wildcards.organism}.gff\""
+
+rule link_download:
+    input:
+        f"fasta/{config['genome-accession']}.{{extension}}"
+    output:
+        "fasta/genome.{extension}"
     threads: 1
     shell:
         "ln {input[0]} {output[0]}"
